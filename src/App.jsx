@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 
 function App() {
   const [quantidade, setQuantidade] = useState('');
@@ -31,13 +32,16 @@ function App() {
       valorUnitario,
       valorTotal,
     };
-    setProdutos([...produtos, produto]);
-    setQuantidade('');
-    setCodigo('');
-    setValorUnitario('');
-    setValorTotal('');
-    calcularSubtotal([...produtos, produto]);
+    const novosProdutos = [...produtos, produto];
+    setProdutos(novosProdutos);
+    setQuantidade("");
+    setCodigo("");
+    setValorUnitario("");
+    setValorTotal("");
+    calcularSubtotal(novosProdutos);
+    salvarProdutosLocalStorage(novosProdutos);
   };
+  
 
   const handleRemoverClick = (index) => {
     const updatedProdutos = [...produtos];
@@ -56,6 +60,14 @@ function App() {
     setProdutos([]);
     setSubtotal(0);
   };
+
+  useEffect(() => {
+    const produtosSalvos = localStorage.getItem("produtos");
+    if (produtosSalvos) {
+      setProdutos(JSON.parse(produtosSalvos));
+      calcularSubtotal(JSON.parse(produtosSalvos));
+    }
+  }, []);  
 
   const updateValorTotal = (quantidade, valorUnitario) => {
     const total = quantidade * valorUnitario;
@@ -85,6 +97,11 @@ function App() {
     }, 0);
     setSubtotal(subtotal.toFixed(2));
   };
+
+  const salvarProdutosLocalStorage = (produtos) => {
+    localStorage.setItem("produtos", JSON.stringify(produtos));
+  };
+  
 
   return (
     <>
